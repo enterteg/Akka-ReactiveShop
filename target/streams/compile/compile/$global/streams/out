@@ -1,0 +1,4 @@
+[0m[[0m[33mwarn[0m] [0m[0m/Users/enterteg/studia/ReactiveShop/src/main/scala/shop/Checkout.scala:27:31: a pure expression does nothing in statement position[0m
+[0m[[0m[33mwarn[0m] [0m[0m  var checkoutTimerId: Unit = null[0m
+[0m[[0m[33mwarn[0m] [0m[0m                              ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
