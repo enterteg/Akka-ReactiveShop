@@ -1,7 +1,7 @@
 package shop
 
 import akka.actor.{ActorRef, FSM, Timers}
-import reactive2.{ExpirationTime, Shop}
+import reactive2.{ExpirationTime, Customer}
 
 object CheckoutState {
   sealed trait State
@@ -25,7 +25,7 @@ class CheckoutFSM extends FSM[CheckoutState.State, CheckoutData.Data] with Timer
   startWith(Initial, Uninitialized)
 
   when(Initial) {
-    case Event(Shop.CheckoutStarted, Uninitialized) => {
+    case Event(Customer.CheckoutStarted, Uninitialized) => {
       println("Checkout started")
       timers.startSingleTimer(CheckoutTimeExpiredKey, CheckoutTimeExpired, ExpirationTime.expirationTime)
       goto(SelectingDelivery) using CheckoutInfo(sender, null, null)
@@ -39,7 +39,7 @@ class CheckoutFSM extends FSM[CheckoutState.State, CheckoutData.Data] with Timer
       stop()
     }
 
-    case Event(Shop.CheckoutCanceled, checkoutInfo: CheckoutInfo) => {
+    case Event(Customer.CheckoutCanceled, checkoutInfo: CheckoutInfo) => {
       println("Checkout canceled")
       stop()
     }
@@ -58,7 +58,7 @@ class CheckoutFSM extends FSM[CheckoutState.State, CheckoutData.Data] with Timer
       stop()
     }
 
-    case Event(Shop.CheckoutCanceled, checkoutInfo) => {
+    case Event(Customer.CheckoutCanceled, checkoutInfo) => {
       stop()
     }
 
@@ -71,7 +71,7 @@ class CheckoutFSM extends FSM[CheckoutState.State, CheckoutData.Data] with Timer
   }
 
   when(ProcessingPayment) {
-    case Event(PaymentTimeExpired | Shop.CheckoutCanceled, checkoutInfo: CheckoutInfo) => {
+    case Event(PaymentTimeExpired | Customer.CheckoutCanceled, checkoutInfo: CheckoutInfo) => {
       println("CHECKOUT CANCELED")
       checkoutInfo.shop ! Failed
       stop()

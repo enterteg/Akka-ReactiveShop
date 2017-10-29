@@ -2,7 +2,7 @@ package shop
 
 import akka.actor.{Actor, ActorRef, Timers}
 import akka.event.LoggingReceive
-import reactive2.{ExpirationTime, Shop}
+import reactive2.{ExpirationTime, Customer}
 
 object Checkout {
   case class SelectDelivery(delivery: String)
@@ -29,7 +29,7 @@ class Checkout extends Actor with Timers {
 
   def receive: Receive = LoggingReceive {
 
-    case Shop.CheckoutStarted => {
+    case Customer.CheckoutStarted => {
       println("Checkout started")
       timers.startSingleTimer(CheckoutTimeExpiredKey, CheckoutTimeExpired, ExpirationTime.expirationTime)
       context become selectingDelivery(sender)
@@ -44,7 +44,7 @@ class Checkout extends Actor with Timers {
       context.stop(self)
     }
 
-    case Shop.CheckoutCanceled => {
+    case Customer.CheckoutCanceled => {
       println("Checkout canceled")
       context.stop(self)
     }
@@ -64,7 +64,7 @@ class Checkout extends Actor with Timers {
       context.stop(self)
     }
 
-    case Shop.CheckoutCanceled =>
+    case Customer.CheckoutCanceled =>
       context.stop(self)
 
     case Checkout.SelectPayment(pay) => {
@@ -79,7 +79,7 @@ class Checkout extends Actor with Timers {
 
   def processingPayment(sender: ActorRef): Receive = LoggingReceive {
 
-    case Checkout.PaymentTimeExpired | Shop.CheckoutCanceled => {
+    case Checkout.PaymentTimeExpired | Customer.CheckoutCanceled => {
       println("CHECKOUT CANCELED")
       sender ! Failed
       context.stop(self)

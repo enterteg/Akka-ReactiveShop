@@ -11,20 +11,20 @@ final case object ExpirationTime {
   val expirationTime = 5.seconds
 }
 
-object Shop {
+object Customer {
   case object CheckoutStarted
   case object CheckoutClosed
   case object CheckoutCanceled
   case object Init
 }
 
-class Shop extends Actor {
+class Customer extends Actor {
   val cart = context.actorOf(Props[CartFSM], "cart")
   var checkout: ActorRef = null
   val items = List(Item("Komputer", 1), Item("Szczotka", 2), Item("Telefon", 3))
 
   def receive = LoggingReceive {
-    case Shop.Init => {
+    case Customer.Init => {
       cart ! Cart.AddItem(items(0))
       cart ! Cart.RemoveItem(items(0))
       cart ! Cart.AddItem(items(0))
@@ -33,7 +33,7 @@ class Shop extends Actor {
       cart ! Cart.RemoveItem(items(0))
       cart ! Cart.AddItem(items(2))
     }
-    case Shop.CheckoutStarted => {
+    case Customer.CheckoutStarted => {
       cart ! Cart.CheckIfEmpty
       context become awaitCheckout
     }
@@ -48,15 +48,15 @@ class Shop extends Actor {
 
   def startCheckout = {
     this.checkout = context.actorOf(Props[CheckoutFSM], "Checkout")
-    cart ! Shop.CheckoutStarted
-    checkout ! Shop.CheckoutStarted
+    cart ! Customer.CheckoutStarted
+    checkout ! Customer.CheckoutStarted
     context become inCheckout
   }
 
   def inCheckout: Receive = LoggingReceive {
-    case Shop.CheckoutCanceled => {
-      checkout ! Shop.CheckoutCanceled
-      cart ! Shop.CheckoutCanceled
+    case Customer.CheckoutCanceled => {
+      checkout ! Customer.CheckoutCanceled
+      cart ! Customer.CheckoutCanceled
       context become receive
     }
 
@@ -76,7 +76,7 @@ class Shop extends Actor {
     }
 
     case Checkout.Failed => {
-      cart ! Shop.CheckoutCanceled
+      cart ! Customer.CheckoutCanceled
       context become receive
     }
   }
@@ -84,12 +84,12 @@ class Shop extends Actor {
 
 object ReactiveShop extends App {
   val system = ActorSystem("Reactive2")
-  val mainActor = system.actorOf(Props[Shop], "ReactiveShop")
+  val mainActor = system.actorOf(Props[Customer], "ReactiveShop")
 
   def workingExample = {
-    mainActor ! Shop.Init
+    mainActor ! Customer.Init
     Thread.sleep(2000)
-    mainActor ! Shop.CheckoutStarted
+    mainActor ! Customer.CheckoutStarted
     Thread.sleep(2000)
     mainActor ! Checkout.SelectDelivery("FedEx")
     Thread.sleep(2000)
@@ -99,35 +99,35 @@ object ReactiveShop extends App {
   }
 
   def cartTimeExpirtedExample = {
-    mainActor ! Shop.Init
+    mainActor ! Customer.Init
   }
 
   def TimeExpirtedExample = {
-    mainActor ! Shop.Init
+    mainActor ! Customer.Init
   }
 
   def checkoutCanceled = {
-    mainActor ! Shop.Init
+    mainActor ! Customer.Init
     Thread.sleep(2000)
-    mainActor ! Shop.CheckoutStarted
+    mainActor ! Customer.CheckoutStarted
     Thread.sleep(2000)
-    mainActor ! Shop.CheckoutCanceled
+    mainActor ! Customer.CheckoutCanceled
   }
 
   def paymentTimerExpired = {
-    mainActor ! Shop.Init
+    mainActor ! Customer.Init
     Thread.sleep(2000)
-    mainActor ! Shop.CheckoutStarted
+    mainActor ! Customer.CheckoutStarted
     Thread.sleep(2000)
     mainActor ! Checkout.SelectDelivery("FedEx")
     Thread.sleep(2000)
     mainActor ! Checkout.SelectPayment("PayPal")
   }
 
-//  workingExample
+  workingExample
 //  cartTimeExpirtedExample
 //  checkoutCanceled
-  paymentTimerExpired
+//  paymentTimerExpired
 
   Await.result(system.whenTerminated, Duration.Inf)
 }

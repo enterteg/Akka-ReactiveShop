@@ -2,7 +2,7 @@ package shop
 
 import akka.actor.{Actor, ActorRef, Timers}
 import akka.event.LoggingReceive
-import reactive2.{ExpirationTime, Shop}
+import reactive2.{ExpirationTime, Customer}
 
 case class Item(name: String, id: Int)
 case class CartItem(item: Item, quantity: Int)
@@ -85,7 +85,7 @@ class Cart extends Actor with Timers {
       }
     }
 
-    case Shop.CheckoutStarted => {
+    case Customer.CheckoutStarted => {
       println("Cart timer canceled")
       timers.cancel(CartTimeExpirationKey)
       println("IN CHECKOUT")
@@ -104,11 +104,11 @@ class Cart extends Actor with Timers {
   }
 
   def inCheckout(sender: ActorRef): Receive = LoggingReceive {
-    case Shop.CheckoutCanceled => {
+    case Customer.CheckoutCanceled => {
       startTimer
       context become nonEmpty(sender)
     }
-    case Shop.CheckoutClosed=>
+    case Customer.CheckoutClosed=>
       context become empty
 
     case Done => {

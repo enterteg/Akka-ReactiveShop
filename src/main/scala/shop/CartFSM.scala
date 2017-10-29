@@ -1,7 +1,7 @@
 package shop
 
 import akka.actor.{FSM, Timers}
-import reactive2.{ExpirationTime, Shop}
+import reactive2.{ExpirationTime, Customer}
 import shop.Cart.{CartTimeExpirationKey, CartTimeExpired, CheckIfEmpty, Done}
 
 object CartState {
@@ -60,7 +60,7 @@ class CartFSM extends FSM[CartState.State, CartData.Data] with Timers {
       }
     }
 
-    case Event(Shop.CheckoutStarted, items) => {
+    case Event(Customer.CheckoutStarted, items) => {
       println("Cart timer canceled - go to checkout")
       timers.cancel(CartTimeExpirationKey)
       goto(InCheckout) using items
@@ -78,12 +78,12 @@ class CartFSM extends FSM[CartState.State, CartData.Data] with Timers {
   }
 
   when(InCheckout) {
-    case Event(Shop.CheckoutCanceled, items) => {
+    case Event(Customer.CheckoutCanceled, items) => {
       startTimer
       goto(NonEmpty) using items
     }
 
-    case Event(Shop.CheckoutClosed | CartTimeExpired, items) => {
+    case Event(Customer.CheckoutClosed | CartTimeExpired, items) => {
       println("Cart -> Go to empty")
       goto(Empty) using EmptyCart
     }
