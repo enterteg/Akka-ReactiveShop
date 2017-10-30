@@ -1,33 +1,27 @@
 [0m[[0m[0mdebug[0m] [0m[0m[0m
 [0m[[0m[0mdebug[0m] [0m[0mInitial source changes: [0m
-[0m[[0m[0mdebug[0m] [0m[0m	removed:Set()[0m
-[0m[[0m[0mdebug[0m] [0m[0m	added: Set()[0m
-[0m[[0m[0mdebug[0m] [0m[0m	modified: Set(/Users/enterteg/studia/ReactiveShop/src/main/scala/shop/Shop.scala)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	removed:Set(/Users/enterteg/studia/ReactiveShop/src/main/scala/shop/CheckoutFSM.scala, /Users/enterteg/studia/ReactiveShop/src/main/scala/shop/CartFSM.scala, /Users/enterteg/studia/ReactiveShop/src/main/scala/shop/Shop.scala)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	added: Set(/Users/enterteg/studia/ReactiveShop/src/main/scala/shop/Customer.scala)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	modified: Set(/Users/enterteg/studia/ReactiveShop/src/main/scala/shop/Cart.scala, /Users/enterteg/studia/ReactiveShop/src/main/scala/shop/Checkout.scala)[0m
 [0m[[0m[0mdebug[0m] [0m[0mInvalidated products: Set()[0m
 [0m[[0m[0mdebug[0m] [0m[0mExternal API changes: API Changes: Set()[0m
 [0m[[0m[0mdebug[0m] [0m[0mModified binary dependencies: Set()[0m
-[0m[[0m[0mdebug[0m] [0m[0mInitial directly invalidated classes: Set(reactive2.Shop.CheckoutStarted, reactive2.Shop.Init, reactive2.Shop.CheckoutCanceled, reactive2.ExpirationTime, reactive2.ReactiveShop, reactive2.Shop, reactive2.Shop.CheckoutClosed)[0m
+[0m[[0m[0mdebug[0m] [0m[0mInitial directly invalidated classes: Set(shop.Cart.Empty, shop.Cart, shop.CartState, shop.CartState.NonEmpty, shop.CartData.Data, shop.Checkout.CheckoutClosed, reactive2.Shop.CheckoutStarted, shop.CheckoutData, shop.CartState.Empty, reactive2.Shop.Init, shop.CheckoutData.Uninitialized, shop.CheckoutState.SelectingDelivery, shop.Checkout.Failed, reactive2.Shop.CheckoutCanceled, shop.Item, shop.Cart.RemoveItem, shop.CheckoutState.State, shop.CartState.InCheckout, shop.Checkout.PaymentReceived, shop.CheckoutState.ProcessingPayment, shop.Cart.CartTimeExpired, shop.Checkout.PaymentTimeExpired, shop.Checkout.CheckoutTimeExpired, reactive2.ExpirationTime, shop.CheckoutFSM, shop.Cart.Done, shop.CheckoutState.SelectingPayment, shop.Cart.Failed, reactive2.ReactiveShop, shop.CartData.EmptyCart, shop.CheckoutData.CheckoutInfo, shop.CheckoutState.Initial, shop.Checkout.PaymentTimeExpiredKey, shop.CartFSM, shop.Checkout.SelectPayment, shop.Checkout, reactive2.Shop, shop.Cart.CheckIfEmpty, shop.Checkout.CheckoutTimeExpiredKey, shop.CheckoutData.Data, reactive2.Shop.CheckoutClosed, shop.CheckoutState, shop.CartState.State, shop.Cart.NonEmpty, shop.Checkout.SelectDelivery, shop.CartItem, shop.Cart.AddItem, shop.Cart.CartTimeExpirationKey, shop.CartData, shop.CartData.ItemsList, shop.Checkout.Done)[0m
 [0m[[0m[0mdebug[0m] [0m[0m[0m
 [0m[[0m[0mdebug[0m] [0m[0mSources indirectly invalidated by:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	product: Set()[0m
 [0m[[0m[0mdebug[0m] [0m[0m	binary dep: Set()[0m
 [0m[[0m[0mdebug[0m] [0m[0m	external source: Set()[0m
-[0m[[0m[0mdebug[0m] [0m[0mAll initially invalidated classes: Set(reactive2.Shop.CheckoutStarted, reactive2.Shop.Init, reactive2.Shop.CheckoutCanceled, reactive2.ExpirationTime, reactive2.ReactiveShop, reactive2.Shop, reactive2.Shop.CheckoutClosed)[0m
-[0m[[0m[0mdebug[0m] [0m[0mAll initially invalidated sources:Set(/Users/enterteg/studia/ReactiveShop/src/main/scala/shop/Shop.scala)[0m
-[0m[[0m[0minfo[0m] [0m[0mCompiling 1 Scala source to /Users/enterteg/studia/ReactiveShop/target/scala-2.12/classes ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mAll sources are invalidated.[0m
+[0m[[0m[0mdebug[0m] [0m[0mRecompiling all 3 sources: invalidated sources (6) exceeded 50.0% of all sources[0m
+[0m[[0m[0minfo[0m] [0m[0mCompiling 3 Scala sources to /Users/enterteg/studia/ReactiveShop/target/scala-2.12/classes ...[0m
 [0m[[0m[0mdebug[0m] [0m[0mGetting org.scala-sbt:compiler-bridge_2.12:1.0.1:compile for Scala 2.12.3[0m
 [0m[[0m[0mdebug[0m] [0m[0mGetting org.scala-sbt:compiler-bridge_2.12:1.0.1:compile for Scala 2.12.3[0m
-[0m[[0m[0mdebug[0m] [0m[0m[zinc] Running cached compiler 68900ac1 for Scala compiler version 2.12.3[0m
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] Running cached compiler 6b2a11e5 for Scala compiler version 2.12.3[0m
 [0m[[0m[0mdebug[0m] [0m[0m[zinc] The Scala compiler is invoked with:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	-bootclasspath[0m
 [0m[[0m[0mdebug[0m] [0m[0m	/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/classes:/Users/enterteg/.sbt/boot/scala-2.12.3/lib/scala-library.jar[0m
 [0m[[0m[0mdebug[0m] [0m[0m	-classpath[0m
 [0m[[0m[0mdebug[0m] [0m[0m	/Users/enterteg/studia/ReactiveShop/target/scala-2.12/classes:/Users/enterteg/.ivy2/cache/com.typesafe.akka/akka-actor_2.12/jars/akka-actor_2.12-2.5.4.jar:/Users/enterteg/.ivy2/cache/com.typesafe/config/bundles/config-1.3.1.jar:/Users/enterteg/.ivy2/cache/org.scala-lang.modules/scala-java8-compat_2.12/bundles/scala-java8-compat_2.12-0.8.0.jar[0m
-[0m[[0m[0mdebug[0m] [0m[0mScala compilation took 2.362158169 s[0m
-[0m[[0m[0minfo[0m] [0m[0mDone compiling.[0m
-[0m[[0m[0mdebug[0m] [0m[0mNew invalidations:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Set()[0m
-[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: Set()[0m
-[0m[[0m[0mdebug[0m] [0m[0mPreviously invalidated, but (transitively) depend on new invalidations:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Set()[0m
-[0m[[0m[0mdebug[0m] [0m[0mAll newly invalidated classes after taking into account (previously) recompiled classes:Set()[0m
+[0m[[0m[0mdebug[0m] [0m[0mCompilation failed (CompilerInterface)[0m
+[0m[[0m[31merror[0m] [0m[0m(compile:[31mcompileIncremental[0m) Compilation failed[0m

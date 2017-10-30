@@ -1,8 +1,8 @@
 package shop
 
-import akka.actor.{Actor, ActorRef, Timers}
+import akka.actor.{Actor, ActorRef, Props, Timers}
 import akka.event.LoggingReceive
-import reactive2.{ExpirationTime, Customer}
+import reactive2.{Customer, ExpirationTime}
 
 case class Item(name: String, id: Int)
 case class CartItem(item: Item, quantity: Int)
@@ -14,7 +14,7 @@ object Cart {
   case object CheckIfEmpty
   // SENT EVENTS
   case object Empty
-  case object NonEmpty
+  case class CheckoutStarted(checkout: ActorRef)
   case object Done
   case object Failed
   case object CartTimeExpired
@@ -25,6 +25,7 @@ object Cart {
 class Cart extends Actor with Timers {
   import Cart._
   var items = Map[Int, CartItem]()
+  var checkout: ActorRef = null
 
   // ACTIONS
   def getQuantity(item: Item): Int = {
@@ -67,11 +68,11 @@ class Cart extends Actor with Timers {
       println("NON EMPTY")
       context become nonEmpty(sender)
     }
-    case CheckIfEmpty => sender ! Empty
+    case Customer.StartCheckout => sender ! Empty
     case _ => sender ! Failed
   }
 
-  def nonEmpty(sender: ActorRef): Receive = LoggingReceive {
+  def nonEmpty(customer: ActorRef): Receive = LoggingReceive {
     case AddItem(item: Item) =>
       addItem(item)
 
@@ -85,11 +86,13 @@ class Cart extends Actor with Timers {
       }
     }
 
-    case Customer.CheckoutStarted => {
-      println("Cart timer canceled")
+    case Customer.StartCheckout => {
+      checkout = context.actorOf(Props(new Checkout(self)), "Checkout")
       timers.cancel(CartTimeExpirationKey)
       println("IN CHECKOUT")
-      context become inCheckout(sender)
+      checkout ! Checkout.StartCheckout
+      customer ! Cart.CheckoutStarted(checkout)
+      context become inCheckout(customer)
     }
 
     case CartTimeExpired => {
@@ -98,17 +101,16 @@ class Cart extends Actor with Timers {
       context become empty
     }
 
-    case CheckIfEmpty => sender ! NonEmpty
-
-    case _ => sender ! Failed
+    case _ => customer ! Failed
   }
 
-  def inCheckout(sender: ActorRef): Receive = LoggingReceive {
-    case Customer.CheckoutCanceled => {
+  def inCheckout(customer: ActorRef): Receive = LoggingReceive {
+    case Customer.CheckoutCanceled | Checkout.Failed => {
       startTimer
-      context become nonEmpty(sender)
+      context become nonEmpty(customer)
     }
     case Customer.CheckoutClosed=>
+      customer ! Cart.Empty
       context become empty
 
     case Done => {

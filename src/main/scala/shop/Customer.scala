@@ -12,15 +12,14 @@ final case object ExpirationTime {
 }
 
 object Customer {
-  case object CheckoutStarted
   case object CheckoutClosed
   case object CheckoutCanceled
+  case object StartCheckout
   case object Init
 }
 
 class Customer extends Actor {
-  val cart = context.actorOf(Props[CartFSM], "cart")
-  var checkout: ActorRef = null
+  val cart = context.actorOf(Props[Cart], "cart")
   val items = List(Item("Komputer", 1), Item("Szczotka", 2), Item("Telefon", 3))
 
   def receive = LoggingReceive {
@@ -32,28 +31,19 @@ class Customer extends Actor {
       cart ! Cart.AddItem(items(2))
       cart ! Cart.RemoveItem(items(0))
       cart ! Cart.AddItem(items(2))
-    }
-    case Customer.CheckoutStarted => {
-      cart ! Cart.CheckIfEmpty
+      cart ! Customer.StartCheckout
       context become awaitCheckout
     }
   }
 
   def awaitCheckout: Receive = LoggingReceive {
-    case Cart.NonEmpty =>
-      startCheckout
+    case Cart.CheckoutStarted(checkout) =>
+      context become inCheckout(checkout)
 
     case Cart.Empty => context become receive
   }
 
-  def startCheckout = {
-    this.checkout = context.actorOf(Props[CheckoutFSM], "Checkout")
-    cart ! Customer.CheckoutStarted
-    checkout ! Customer.CheckoutStarted
-    context become inCheckout
-  }
-
-  def inCheckout: Receive = LoggingReceive {
+  def inCheckout(checkout: ActorRef): Receive = LoggingReceive {
     case Customer.CheckoutCanceled => {
       checkout ! Customer.CheckoutCanceled
       cart ! Customer.CheckoutCanceled
@@ -65,6 +55,10 @@ class Customer extends Actor {
 
     case Checkout.SelectPayment(payment) =>
       checkout ! Checkout.SelectPayment(payment)
+
+    case Checkout.PaymentServiceStarted(paymentService) => {
+      context become inPayment(paymentService)
+    }
 
     case Checkout.PaymentReceived =>
       checkout ! Checkout.PaymentReceived
@@ -80,6 +74,16 @@ class Customer extends Actor {
       context become receive
     }
   }
+
+  def inPayment(paymentService: ActorRef): LoggingReceive = {
+    case PaymentService.PaymentConfirmed => {
+      println("Payment confirmed to customer")
+      context become receive
+    }
+    case Cart.Empty => {
+      context become receive
+    }
+  }
 }
 
 object ReactiveShop extends App {
@@ -89,8 +93,6 @@ object ReactiveShop extends App {
   def workingExample = {
     mainActor ! Customer.Init
     Thread.sleep(2000)
-    mainActor ! Customer.CheckoutStarted
-    Thread.sleep(2000)
     mainActor ! Checkout.SelectDelivery("FedEx")
     Thread.sleep(2000)
     mainActor ! Checkout.SelectPayment("PayPal")
@@ -98,31 +100,31 @@ object ReactiveShop extends App {
     mainActor ! Checkout.PaymentReceived
   }
 
-  def cartTimeExpirtedExample = {
-    mainActor ! Customer.Init
-  }
-
-  def TimeExpirtedExample = {
-    mainActor ! Customer.Init
-  }
-
-  def checkoutCanceled = {
-    mainActor ! Customer.Init
-    Thread.sleep(2000)
-    mainActor ! Customer.CheckoutStarted
-    Thread.sleep(2000)
-    mainActor ! Customer.CheckoutCanceled
-  }
-
-  def paymentTimerExpired = {
-    mainActor ! Customer.Init
-    Thread.sleep(2000)
-    mainActor ! Customer.CheckoutStarted
-    Thread.sleep(2000)
-    mainActor ! Checkout.SelectDelivery("FedEx")
-    Thread.sleep(2000)
-    mainActor ! Checkout.SelectPayment("PayPal")
-  }
+//  def cartTimeExpirtedExample = {
+//    mainActor ! Customer.Init
+//  }
+//
+//  def TimeExpirtedExample = {
+//    mainActor ! Customer.Init
+//  }
+//
+//  def checkoutCanceled = {
+//    mainActor ! Customer.Init
+//    Thread.sleep(2000)
+//    mainActor ! Customer.CheckoutStarted
+//    Thread.sleep(2000)
+//    mainActor ! Customer.CheckoutCanceled
+//  }
+//
+//  def paymentTimerExpired = {
+//    mainActor ! Customer.Init
+//    Thread.sleep(2000)
+//    mainActor ! Customer.CheckoutStarted
+//    Thread.sleep(2000)
+//    mainActor ! Checkout.SelectDelivery("FedEx")
+//    Thread.sleep(2000)
+//    mainActor ! Checkout.SelectPayment("PayPal")
+//  }
 
   workingExample
 //  cartTimeExpirtedExample

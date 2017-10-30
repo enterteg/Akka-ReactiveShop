@@ -1,12 +1,14 @@
 package shop
 
-import akka.actor.{Actor, ActorRef, Timers}
+import akka.actor.{Actor, ActorRef, Props, Timers}
 import akka.event.LoggingReceive
-import reactive2.{ExpirationTime, Customer}
+import reactive2.{Customer, ExpirationTime}
 
 object Checkout {
+  case object StartCheckout
   case class SelectDelivery(delivery: String)
   case class SelectPayment(payment: String)
+  case class PaymentServiceStarted(paymentService: ActorRef)
   case object CheckoutTimeExpired
   case object CheckoutTimeExpiredKey
   case object PaymentTimeExpired
@@ -18,29 +20,28 @@ object Checkout {
 }
 
 
-class Checkout extends Actor with Timers {
+class Checkout(cart: ActorRef) extends Actor with Timers {
 
   import Checkout._
-
   var delivery: String = null
   var payment: String = null
+  var paymentService: ActorRef = null
   var checkoutTimerId: Unit = null
 
 
   def receive: Receive = LoggingReceive {
-
-    case Customer.CheckoutStarted => {
+    case Checkout.StartCheckout => {
       println("Checkout started")
       timers.startSingleTimer(CheckoutTimeExpiredKey, CheckoutTimeExpired, ExpirationTime.expirationTime)
       context become selectingDelivery(sender)
     }
   }
 
-  def selectingDelivery(sender: ActorRef): Receive = LoggingReceive {
+  def selectingDelivery(customer: ActorRef): Receive = LoggingReceive {
 
     case Checkout.CheckoutTimeExpired  => {
       println("Checkout time expired")
-      sender ! Failed
+      customer ! Failed
       context.stop(self)
     }
 
@@ -52,15 +53,15 @@ class Checkout extends Actor with Timers {
     case Checkout.SelectDelivery(deliv) => {
       println(s"Checkout deliver selected $deliv")
       delivery = deliv
-      context become selectingPayment(sender)
+      context become selectingPayment(customer)
     }
   }
 
-  def selectingPayment(sender: ActorRef): Receive = LoggingReceive {
+  def selectingPayment(customer: ActorRef): Receive = LoggingReceive {
 
     case Checkout.CheckoutTimeExpired => {
       println("CHECKOUT CANCELED")
-      sender ! Failed
+      customer ! Failed
       context.stop(self)
     }
 
@@ -69,25 +70,28 @@ class Checkout extends Actor with Timers {
 
     case Checkout.SelectPayment(pay) => {
       println(s"Checkout paymeny selected $pay")
-
+      paymentService = context.actorOf(Props(new PaymentService(self)), "PaymentService")
+      customer ! Checkout.PaymentServiceStarted(paymentService)
       payment = pay
       timers.cancel(CheckoutTimeExpiredKey)
       timers.startSingleTimer(PaymentTimeExpiredKey, PaymentTimeExpired, ExpirationTime.expirationTime)
-      context become processingPayment(sender)
+      context become processingPayment(customer)
     }
   }
 
-  def processingPayment(sender: ActorRef): Receive = LoggingReceive {
+  def processingPayment(customer: ActorRef): Receive = LoggingReceive {
 
-    case Checkout.PaymentTimeExpired | Customer.CheckoutCanceled => {
-      println("CHECKOUT CANCELED")
-      sender ! Failed
+    case PaymentService.PaymentReceived => {
+      println("Payment received")
+      customer ! Checkout.CheckoutClosed
+      cart ! Checkout.CheckoutClosed
       context.stop(self)
     }
 
-    case Checkout.PaymentReceived => {
-      println("Payment received")
-      sender ! Done
+    case PaymentService.PaymentFailed => {
+      println("Payment failed")
+      customer ! Failed
+      cart ! Failed
       context.stop(self)
     }
   }

@@ -1,4 +1,11 @@
+[0m[[0m[31merror[0m] [0m[0m/Users/enterteg/studia/ReactiveShop/src/main/scala/shop/Cart.scala:101:35: not found: value NonEmpty[0m
+[0m[[0m[31merror[0m] [0m[0m    case CheckIfEmpty => sender ! NonEmpty[0m
+[0m[[0m[31merror[0m] [0m[0m                                  ^[0m
 [0m[[0m[33mwarn[0m] [0m[0m/Users/enterteg/studia/ReactiveShop/src/main/scala/shop/Checkout.scala:27:31: a pure expression does nothing in statement position[0m
 [0m[[0m[33mwarn[0m] [0m[0m  var checkoutTimerId: Unit = null[0m
 [0m[[0m[33mwarn[0m] [0m[0m                              ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/enterteg/studia/ReactiveShop/src/main/scala/shop/Customer.scala:42:15: object CheckoutStarted is not a case class, nor does it have an unapply/unapplySeq member[0m
+[0m[[0m[31merror[0m] [0m[0m    case Cart.CheckoutStarted(checkout) =>[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
 [0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
