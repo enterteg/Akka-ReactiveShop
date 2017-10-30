@@ -75,7 +75,7 @@ class Customer extends Actor {
     }
   }
 
-  def inPayment(paymentService: ActorRef): LoggingReceive = {
+  def inPayment(paymentService: ActorRef): Receive = LoggingReceive {
     case PaymentService.PaymentConfirmed => {
       println("Payment confirmed to customer")
       context become receive

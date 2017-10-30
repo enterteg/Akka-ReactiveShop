@@ -19,6 +19,8 @@ object Cart {
   case object Failed
   case object CartTimeExpired
   case object CartTimeExpirationKey
+  case object ItemAdded
+  case object ItemRemoved
 }
 
 
@@ -66,6 +68,7 @@ class Cart extends Actor with Timers {
       addItem(item)
       startTimer
       println("NON EMPTY")
+      sender ! Cart.ItemAdded
       context become nonEmpty(sender)
     }
     case Customer.StartCheckout => sender ! Empty
@@ -73,14 +76,18 @@ class Cart extends Actor with Timers {
   }
 
   def nonEmpty(customer: ActorRef): Receive = LoggingReceive {
-    case AddItem(item: Item) =>
+    case AddItem(item: Item) => {
+      sender ! ItemAdded
       addItem(item)
+    }
 
     case RemoveItem(item: Item) => {
       removeItem(item)
+      sender ! ItemRemoved
       if (items.isEmpty) {
         println("Cart timer canceled")
         timers.cancel(CartTimeExpirationKey)
+        sender ! Cart.Empty
         println("EMPTY")
         context become empty
       }

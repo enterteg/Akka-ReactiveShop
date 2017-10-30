@@ -2,3 +2,5 @@ sbt compile
 compile
 ;reload; set _root_.org.jetbrains.sbt.StructureKeys.sbtStructureOptions in Global := "download resolveClassifiers resolveSbtClassifiers" ;*/*:dumpStructureTo /private/var/folders/jn/sc70s_jx4ys2w9dmvf_m6lq40000gn/T/sbt-structure.xml
 all {file:/Users/enterteg/studia/ReactiveShop/}reactiveshop/products {file:/Users/enterteg/studia/ReactiveShop/}reactiveshop/test:products
+sbt test
+test

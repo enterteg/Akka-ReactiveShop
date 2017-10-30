@@ -1,0 +1,5 @@
+[0m[[0m[0minfo[0m] [0m[0m[32mCartTestSync:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mA Cart[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- must start in a empty state[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- must receive item and go to nonEmpty state[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- must remove item and go to empty state[0m[0m
